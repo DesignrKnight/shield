@@ -2,15 +2,26 @@ const express = require('express');
 const requestIP = require('request-ip');
 const nodeCache = require('node-cache');
 
-const IPCache = new nodeCache({ stdTTL: 10, deleteOnExpire: false, checkperiod: 5 });
+const IPCache = new nodeCache({ stdTTL: 10, deleteOnExpire: false, checkperiod: 15 });
+IPCache.flushAll();
 
 const app = express();
 
 IPCache.on('expired', (key, value) => {
 	if (new Date() - value[value.length - 1] > 10000) {
 		IPCache.del(key);
+	} else {
+		let count = 0;
+		value.find(function (element) {
+			count = count + 1;
+			return new Date() - element < 10000;
+		});
+		if (count == value.length) {
+			return;
+		}
+		value.splice(0, count);
+		IPCache.set(key, value, 10 - (new Date() - value[0]) / 1000);
 	}
-	console.log('key', key, 'value', IPCache.get(key));
 });
 
 const updateCache = (ip) => {
@@ -24,12 +35,13 @@ const updateCache = (ip) => {
 const ipMiddleware = function (req, res, next) {
 	const clientIp = requestIP.getClientIp(req);
 	updateCache(clientIp);
-	// IPCache.set(clientIp, new Date(), 30);
-	// const date1 = new Date();
-	// const date2 = new Date('2021-04-30T11:30:25.236Z');
-	// console.log((date2 - date1) / 1000);
-	console.log(IPCache.get(clientIp));
-	console.log('TTL', IPCache.getTtl(clientIp));
+	const IPArray = IPCache.get(clientIp);
+	if (IPArray.length > 1) {
+		const rps = (1000 * 60 * IPArray.length) / (IPArray[IPArray.length - 1] - IPArray[0]);
+		if (rps > 20) {
+			console.log('You are hitting limit', key);
+		}
+	}
 	next();
 };
 
