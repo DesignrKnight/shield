@@ -1,0 +1,27 @@
+{
+  "name": "shield",
+  "version": "1.0.0",
+  "description": "Free Rate Limiter based on Cloudflare as Firewall",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DesignrKnight/shield.git"
+  },
+  "keywords": [
+    "firewall",
+    "rate-limiter"
+  ],
+  "author": "DesignrKnight",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DesignrKnight/shield/issues"
+  },
+  "homepage": "https://github.com/DesignrKnight/shield#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "request-ip": "^2.1.3"
+  }
+}
