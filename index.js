@@ -1,6 +1,8 @@
 const express = require('express');
 const requestIP = require('request-ip');
 const nodeCache = require('node-cache');
+const axios = require('axios');
+require('dotenv').config();
 
 const IPCache = new nodeCache({ stdTTL: 10, deleteOnExpire: false, checkperiod: 15 });
 IPCache.flushAll();
@@ -32,13 +34,27 @@ const updateCache = (ip) => {
 	cachedIP.push(new Date());
 	IPCache.set(ip, cachedIP, (IPCache.getTtl(ip) - Date.now()) / 1000 || 10);
 };
-const ipMiddleware = function (req, res, next) {
+const ipMiddleware = async function (req, res, next) {
 	const clientIp = requestIP.getClientIp(req);
 	updateCache(clientIp);
 	const IPArray = IPCache.get(clientIp);
 	if (IPArray.length > 1) {
 		const rps = (1000 * IPArray.length) / (IPArray[IPArray.length - 1] - IPArray[0]);
-		if (rps > 3) {
+		if (rps > 2) {
+			const url = `https://api.cloudflare.com/client/v4/accounts/${process.env.ACCOUNT_ID}/rules/lists/${process.env.LIST_ID}/items`;
+			const body = [{ ip: `${clientIp}`, comment: 'Banned IP address via Rate Limiter' }];
+			const headers = {
+				'X-Auth-Email': process.env.ACCOUNT_MAIL,
+				'X-Auth-Key': process.env.API_KEY,
+			};
+			try {
+				const response = await axios.post(url, body, { headers: headers });
+				const data = response.data;
+				console.log(data);
+			} catch (error) {
+				console.log(error);
+			}
+
 			console.log('You are hitting limit', clientIp);
 		}
 	}
