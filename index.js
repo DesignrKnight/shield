@@ -37,8 +37,8 @@ const ipMiddleware = function (req, res, next) {
 	updateCache(clientIp);
 	const IPArray = IPCache.get(clientIp);
 	if (IPArray.length > 1) {
-		const rps = (1000 * 60 * IPArray.length) / (IPArray[IPArray.length - 1] - IPArray[0]);
-		if (rps > 20) {
+		const rps = (1000 * IPArray.length) / (IPArray[IPArray.length - 1] - IPArray[0]);
+		if (rps > 3) {
 			console.log('You are hitting limit', clientIp);
 		}
 	}
