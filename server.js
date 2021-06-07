@@ -22,9 +22,6 @@ IPCache.on('expired', (key, value) => {
 			count = count + 1;
 			return new Date() - element < TIME_FRAME_IN_MS;
 		});
-		if (count == value.length) {
-			return;
-		}
 		value.splice(0, count);
 		IPCache.set(key, value, TIME_FRAME_IN_S - (new Date() - value[0]) * MS_TO_S);
 	}
