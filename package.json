@@ -2,7 +2,7 @@
   "name": "shield",
   "version": "1.0.0",
   "description": "Free Rate Limiter based on Cloudflare as Firewall",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
