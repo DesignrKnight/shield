@@ -20,7 +20,7 @@ IPCache.on('expired', (key, value) => {
 		const updatedValue = value.filter(function (element) {
 			return new Date() - element < TIME_FRAME_IN_MS;
 		});
-		IPCache.set(key, updatedValue, TIME_FRAME_IN_S - (new Date() - value[0]) * MS_TO_S);
+		IPCache.set(key, updatedValue, TIME_FRAME_IN_S - (new Date() - updatedValue[0]) * MS_TO_S);
 	}
 });
 
