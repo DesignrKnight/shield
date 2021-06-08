@@ -43,7 +43,7 @@ const ipMiddleware = async function (req, res, next) {
 				'X-Auth-Key': process.env.API_KEY,
 			};
 			try {
-				await axios.post(url, body, { headers: headers });
+				await axios.post(url, body, { headers });
 			} catch (error) {
 				console.log(error);
 			}
